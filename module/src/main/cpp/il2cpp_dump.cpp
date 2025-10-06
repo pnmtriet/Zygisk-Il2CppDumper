@@ -17,6 +17,9 @@
 #include "il2cpp-tabledefs.h"
 #include "il2cpp-class.h"
 
+// Thêm dòng này để compiler biết hàm dump_type tồn tại
+std::string dump_type(const Il2CppType *type);
+
 #define DO_API(r, n, p) r (*n) p
 #include "il2cpp-api-functions.h"
 #undef DO_API
