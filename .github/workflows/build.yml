@@ -1,4 +1,4 @@
-name: Build Zygisk-Il2CppDumper
+name: Build Hidden Module
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build Module
+    name: Build Hidden Module
     runs-on: ubuntu-latest
 
     steps:
@@ -24,14 +24,24 @@ jobs:
           java-version: 11
           cache: gradle
 
-      - name: Prepare Gradle build
+      - name: Patch identifiers (anti-detect)
         run: |
           chmod +x ./gradlew
           echo "Using package name: ${{ github.event.inputs.package_name }}"
+
           # Ghi package name vào file game.h
           sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
-          # Cập nhật mô tả module
+
+          # Cập nhật mô tả module (ẩn tên thật)
           sed -i 's/moduleDescription = "/moduleDescription = "('${{ github.event.inputs.package_name}}') /g' module.gradle
+
+          # Ẩn thông tin module.prop — tránh từ khóa bị phát hiện
+          sed -i 's/${id}/com.system.runtimehelper/g' module/module.prop
+          sed -i 's/${name}/System Runtime Helper/g' module/module.prop
+          sed -i 's/${version}/1.0.0/g' module/module.prop
+          sed -i 's/${versionCode}/1/g' module/module.prop
+          sed -i 's/${author}/system/g' module/module.prop
+          sed -i 's#${description}#Enhances app runtime compatibility#g' module/module.prop
 
       - name: Build release module
         run: ./gradlew :module:assembleRelease --stacktrace
@@ -39,6 +49,6 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: zygisk-il2cppdumper-${{ github.event.inputs.package_name }}
+          name: system-runtimehelper-${{ github.event.inputs.package_name }}
           path: out/magisk_module_release/
           if-no-files-found: error
