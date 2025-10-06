@@ -1,7 +1,3 @@
-//
-// Modified full il2cpp_dump.cpp (includes dump_type and fixes for compile)
-//
-
 #include "il2cpp_dump.h"
 #include <dlfcn.h>
 #include <cstdlib>
@@ -17,13 +13,12 @@
 #include "il2cpp-tabledefs.h"
 #include "il2cpp-class.h"
 
-// Prototype so compiler knows dump_type exists before use
+// KHÔNG ĐỂ GÌ PHÍA TRÊN DÒNG NÀY
+// Khai báo prototype để compiler biết dump_type tồn tại
 std::string dump_type(const Il2CppType *type);
 
 #define DO_API(r, n, p) r (*n) p
-
 #include "il2cpp-api-functions.h"
-
 #undef DO_API
 
 static uint64_t il2cpp_base = 0;
